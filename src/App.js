@@ -1,24 +1,26 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect, useContext } from "react";
+import { socket } from "./utils/socket";
+import Router from "./router";
+import { UserProvider, UserConsumer } from "./contexts/userContext";
+import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom";
 
 function App() {
+  const [response, setResponse] = useState("");
+
+  useEffect(() => {
+    socket.on("FromAPI", (data) => {
+      setResponse(data);
+    });
+    return () => socket.disconnect();
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <UserProvider>
+        <Router />
+        <p>it's {response}</p>
+      </UserProvider>
+    </BrowserRouter>
   );
 }
 

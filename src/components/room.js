@@ -55,59 +55,60 @@ const Room = () => {
           Room not found, go back <Link to="/">Home</Link>
         </div>
       )}
-      {name ? (
-        <>
-          <p>This is the room! {roomId}</p>
-          Add New Prompt!
-          <form onSubmit={(e) => handlePromptSubmit(e)}>
-            <input
-              type="text"
-              placeholder="cool prompt"
-              onChange={(e) => setPromptValue(e.target.value)}
-              value={promptValue}
-            ></input>
-          </form>
-          {prompts &&
-            prompts.map((prompt) => {
-              return (
-                <div key={prompt.id}>
-                  <b>{prompt.text}</b>
-                  <button
-                    onClick={() =>
-                      socket.emit("deletePrompt", {
-                        roomId,
-                        promptId: prompt.id,
-                      })
-                    }
-                  >
-                    x
-                  </button>
-                </div>
-              );
-            })}
-          {users &&
-            users.map((user) => {
-              return (
-                <div>
-                  <b style={{ color: "#00cc99" }}>[#]</b>
-                  <b>{user.username}</b>
-                </div>
-              );
-            })}
-          <div>{JSON.stringify(users)}</div>
-        </>
-      ) : (
-        <div>
-          Enter your name!{" "}
-          <form onSubmit={(e) => handleSubmitName(e)}>
-            <input
-              type="text"
-              placeholder="cool name"
-              onChange={(e) => setNameValue(e.target.value)}
-            ></input>
-          </form>
-        </div>
-      )}
+      {!notfound &&
+        (name ? (
+          <>
+            <p>This is the room! {roomId}</p>
+            Add New Prompt!
+            <form onSubmit={(e) => handlePromptSubmit(e)}>
+              <input
+                type="text"
+                placeholder="cool prompt"
+                onChange={(e) => setPromptValue(e.target.value)}
+                value={promptValue}
+              ></input>
+            </form>
+            {prompts &&
+              prompts.map((prompt) => {
+                return (
+                  <div key={prompt.id}>
+                    <b>{prompt.text}</b>
+                    <button
+                      onClick={() =>
+                        socket.emit("deletePrompt", {
+                          roomId,
+                          promptId: prompt.id,
+                        })
+                      }
+                    >
+                      x
+                    </button>
+                  </div>
+                );
+              })}
+            {users &&
+              users.map((user) => {
+                return (
+                  <div>
+                    <b style={{ color: "#00cc99" }}>[#]</b>
+                    <b>{user.username}</b>
+                  </div>
+                );
+              })}
+            <div>{JSON.stringify(users)}</div>
+          </>
+        ) : (
+          <div>
+            Enter your name!{" "}
+            <form onSubmit={(e) => handleSubmitName(e)}>
+              <input
+                type="text"
+                placeholder="cool name"
+                onChange={(e) => setNameValue(e.target.value)}
+              ></input>
+            </form>
+          </div>
+        ))}
     </div>
   );
 };

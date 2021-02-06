@@ -3,10 +3,10 @@ import { Switch, Route, Redirect } from "react-router-dom";
 
 import Welcome from "./components/welcome";
 import Room from "./components/room";
-import UserContext from "./contexts/userContext";
+import GameContext from "./contexts/gameContext";
 
 const Router = () => {
-  const { name } = useContext(UserContext);
+  const { name } = useContext(GameContext);
   return (
     <Switch>
       <Route exact path="/:roomId" component={Room} />

@@ -1,22 +1,29 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { useHistory } from "react-router-dom";
-import UserContext from "../contexts/userContext";
+import GameContext from "../contexts/gameContext";
 import { makeRoomId } from "../utils/roomId";
 import { socket } from "../utils/socket";
 
 const Welcome = () => {
-  const { name, setName } = useContext(UserContext);
+  const { name, setName } = useContext(GameContext);
+  const [roomId, setRoomdId] = useState("");
   const history = useHistory();
 
   const handleCreateRoom = () => {
-    let roomId = makeRoomId();
-    console.log("id!", roomId);
-    socket.emit("createRoom", { roomId, name }, (response) => {
+    let newRoomId = makeRoomId();
+    console.log("id!", newRoomId);
+    socket.emit("createRoom", { roomId: newRoomId }, (response) => {
       console.log(response);
-      roomId = response.id;
+      newRoomId = response.id;
     });
-    history.push(`/${roomId}`);
+    history.push(`/${newRoomId}`);
     // window.location.pathname = id;
+  };
+
+  const handleJoinRoom = (e) => {
+    e.preventDefault();
+    console.log(roomId);
+    history.push(`/${roomId}`);
   };
 
   return (
@@ -30,8 +37,16 @@ const Welcome = () => {
       ></input>
 
       <button onClick={handleCreateRoom}>Create Room</button>
-      <button>Join Room</button>
-      <button onClick={() => history.goBack()}> go back ? </button>
+      <form onSubmit={(e) => handleJoinRoom(e)}>
+        <input
+          type="text"
+          name="room-name"
+          onChange={(e) => setRoomdId(e.target.value)}
+          placeholder="Enter room id"
+          required
+        ></input>
+        <button type="submit">Join Room</button>
+      </form>
     </div>
   );
 };

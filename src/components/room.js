@@ -1,12 +1,22 @@
 import React, { useContext, useEffect, useState } from "react";
-import io from "socket.io-client";
 import { URL } from "../utils/constants";
 import { useParams, Link } from "react-router-dom";
-import UserContext from "../contexts/userContext";
+import GameContext from "../contexts/gameContext";
 import { socket } from "../utils/socket";
 
 const Room = () => {
-  const { name, setName } = useContext(UserContext);
+  const {
+    name,
+    setName,
+    roundInProgress,
+    setRoundInProgress,
+    playingUser,
+    setPlayingUser,
+    currentlyPlaying,
+    setCurrentlyPlaying,
+    timer,
+    setTimer,
+  } = useContext(GameContext);
   const { roomId } = useParams();
   const [notfound, setNotFound] = useState(false);
   const [users, setUsers] = useState([]);
@@ -21,9 +31,7 @@ const Room = () => {
   }, []);
   useEffect(() => {
     if (name) {
-      socket.emit("joinRoom", { roomId, name }, (response) => {
-        console.log(response);
-      });
+      socket.emit("joinRoom", { roomId, name });
     }
     socket.on("roomUsers", (data) => {
       console.log("users DATA", data);
@@ -32,6 +40,30 @@ const Room = () => {
     socket.on("allPrompts", (data) => {
       console.log("prompt DATA", data);
       setPrompts(data);
+    });
+    socket.on("roundStart", (data) => {
+      console.log("ROUND START?? data", data);
+      setRoundInProgress(true);
+      setPlayingUser(data);
+    });
+    socket.on("currentlyPlaying", () => {
+      console.log("am currently playing ?");
+      setCurrentlyPlaying(true);
+    });
+    socket.on("roundStop", () => {
+      console.log("STOPPING ROUND!", { currentlyPlaying });
+      setRoundInProgress(false);
+      setPlayingUser(false);
+      console.log("set current to fasle!");
+      setCurrentlyPlaying(false);
+      setPlayingUser("");
+    });
+    socket.on("roomTimer", (data) => {
+      console.log("is tiemr ? ");
+      setTimer(data);
+    });
+    socket.on("stopTimer", () => {
+      setTimer(undefined);
     });
     return () => socket.emit("leaveRoom", { roomId });
   }, []);
@@ -48,6 +80,13 @@ const Room = () => {
     setPromptValue("");
   };
 
+  const handleStartRound = () => {
+    socket.emit("startRound", { roomId, name });
+  };
+  const handleStopRound = () => {
+    socket.emit("stopRound", { roomId });
+  };
+
   return (
     <div>
       {notfound && (
@@ -55,10 +94,25 @@ const Room = () => {
           Room not found, go back <Link to="/">Home</Link>
         </div>
       )}
+      {timer && <div> TIMER : {timer}</div>}
       {!notfound &&
         (name ? (
           <>
+            {currentlyPlaying && (
+              <>
+                <div>YOU ARE CURRENTLY PLAYING! </div>
+                {roundInProgress && (
+                  <button onClick={handleStopRound}>Stop Round!!</button>
+                )}
+              </>
+            )}
+            {!currentlyPlaying && roundInProgress && (
+              <div>{playingUser} is Currently playing c:</div>
+            )}
             <p>This is the room! {roomId}</p>
+            {!roundInProgress && (
+              <button onClick={handleStartRound}>Start Round!!</button>
+            )}
             Add New Prompt!
             <form onSubmit={(e) => handlePromptSubmit(e)}>
               <input

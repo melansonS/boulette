@@ -16,6 +16,10 @@ const Room = () => {
     setCurrentlyPlaying,
     timer,
     setTimer,
+    myTeam,
+    setMyTeam,
+    teams,
+    setTeams,
   } = useContext(GameContext);
   const { roomId } = useParams();
   const [notfound, setNotFound] = useState(false);
@@ -23,19 +27,27 @@ const Room = () => {
   const [prompts, setPrompts] = useState([]);
   const [nameValue, setNameValue] = useState("");
   const [promptValue, setPromptValue] = useState("");
+
   useEffect(async () => {
     const response = await fetch(`${URL}/check-rooms?id=${roomId}`);
     const body = await response.json();
     setNotFound(body.notFound);
-    console.log({ body });
   }, []);
   useEffect(() => {
-    if (name) {
+    if (name && !notfound) {
       socket.emit("joinRoom", { roomId, name });
     }
+    socket.on("notFound", () => {
+      setNotFound(true);
+    });
     socket.on("roomUsers", (data) => {
       console.log("users DATA", data);
-      setUsers(data);
+      setTeams(data);
+      setUsers([...data.redTeam.members, ...data.blueTeam.members]);
+      const amRed =
+        data.redTeam.members.findIndex((member) => member.id === socket.id) !==
+        -1;
+      setMyTeam(amRed ? "redTeam" : "blueTeam");
     });
     socket.on("allPrompts", (data) => {
       console.log("prompt DATA", data);
@@ -53,13 +65,11 @@ const Room = () => {
     socket.on("roundStop", () => {
       console.log("STOPPING ROUND!", { currentlyPlaying });
       setRoundInProgress(false);
-      setPlayingUser(false);
       console.log("set current to fasle!");
       setCurrentlyPlaying(false);
       setPlayingUser("");
     });
     socket.on("roomTimer", (data) => {
-      console.log("is tiemr ? ");
       setTimer(data);
     });
     socket.on("stopTimer", () => {
@@ -81,10 +91,14 @@ const Room = () => {
   };
 
   const handleStartRound = () => {
-    socket.emit("startRound", { roomId, name });
+    socket.emit("startRound", { roomId, name, team: myTeam });
   };
   const handleStopRound = () => {
     socket.emit("stopRound", { roomId });
+  };
+
+  const handleChangeTeam = () => {
+    socket.emit("changeTeam", { roomId, team: myTeam });
   };
 
   return (
@@ -107,7 +121,16 @@ const Room = () => {
               </>
             )}
             {!currentlyPlaying && roundInProgress && (
-              <div>{playingUser} is Currently playing c:</div>
+              <div>
+                <span
+                  style={{
+                    color: playingUser.team === "redTeam" ? "red" : "blue",
+                  }}
+                >
+                  [#]
+                </span>
+                {playingUser.username} is Currently playing c:
+              </div>
             )}
             <p>This is the room! {roomId}</p>
             {!roundInProgress && (
@@ -120,6 +143,7 @@ const Room = () => {
                 placeholder="cool prompt"
                 onChange={(e) => setPromptValue(e.target.value)}
                 value={promptValue}
+                disabled={roundInProgress}
               ></input>
             </form>
             {prompts &&
@@ -149,6 +173,52 @@ const Room = () => {
                   </div>
                 );
               })}
+            {teams && (
+              <div>
+                {teams.redTeam && (
+                  <div>
+                    <h4>RedTeam</h4>
+                    {myTeam !== "redTeam" && (
+                      <button
+                        disabled={roundInProgress}
+                        onClick={handleChangeTeam}
+                      >
+                        Join Red Team
+                      </button>
+                    )}
+                    {teams.redTeam.members.map((member) => {
+                      return (
+                        <div>
+                          <b style={{ color: "#C70039" }}>[#]</b>
+                          <b>{member.username}</b>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+                {teams.blueTeam && (
+                  <div>
+                    <h4>BlueTeam</h4>
+                    {myTeam !== "blueTeam" && (
+                      <button
+                        disabled={roundInProgress}
+                        onClick={handleChangeTeam}
+                      >
+                        Join Blue Team
+                      </button>
+                    )}
+                    {teams.blueTeam.members.map((member) => {
+                      return (
+                        <div>
+                          <b style={{ color: "#1B87A8" }}>[#]</b>
+                          <b>{member.username}</b>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
             <div>{JSON.stringify(users)}</div>
           </>
         ) : (

@@ -8,6 +8,8 @@ const GameProvider = ({ children }) => {
   const [playingUser, setPlayingUser] = useState("");
   const [roundInProgress, setRoundInProgress] = useState(false);
   const [timer, setTimer] = useState(undefined);
+  const [myTeam, setMyTeam] = useState(undefined);
+  const [teams, setTeams] = useState({});
   const value = {
     name,
     setName,
@@ -19,6 +21,10 @@ const GameProvider = ({ children }) => {
     setPlayingUser,
     timer,
     setTimer,
+    myTeam,
+    setMyTeam,
+    teams,
+    setTeams,
   };
 
   return <GameContext.Provider value={value}>{children}</GameContext.Provider>;

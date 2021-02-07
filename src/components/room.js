@@ -20,6 +20,8 @@ const Room = () => {
     setMyTeam,
     teams,
     setTeams,
+    skippedPrompts,
+    setSkippedPrompts,
   } = useContext(GameContext);
   const { roomId } = useParams();
   const [notfound, setNotFound] = useState(false);
@@ -53,6 +55,10 @@ const Room = () => {
       console.log("prompt DATA", data);
       setPrompts(data);
     });
+    socket.on("promptDrawn", (data) => {
+      setTeams(data.teams);
+      setPrompts(data.prompts);
+    });
     socket.on("roundStart", (data) => {
       console.log("ROUND START?? data", data);
       setRoundInProgress(true);
@@ -75,6 +81,10 @@ const Room = () => {
     socket.on("stopTimer", () => {
       setTimer(undefined);
     });
+    socket.on("gameReset", (data) => {
+      setTeams(data.teams);
+      setPrompts(data.prompts);
+    });
     return () => socket.emit("leaveRoom", { roomId });
   }, []);
 
@@ -90,6 +100,20 @@ const Room = () => {
     setPromptValue("");
   };
 
+  const handleDeletePrompt = (prompt) => {
+    socket.emit("deletePrompt", { roomId, promptId: prompt.id });
+  };
+  const handleDrawPrompt = (prompt) => {
+    socket.emit("drawPrompt", { roomId, promptId: prompt.id, team: myTeam });
+  };
+  const handleSkipPrompt = (prompt) => {
+    setSkippedPrompts([...skippedPrompts, prompt.id]);
+  };
+
+  const handleResetPrompts = () => {
+    socket.emit("resetPrompts", { roomId });
+  };
+
   const handleStartRound = () => {
     socket.emit("startRound", { roomId, name, team: myTeam });
   };
@@ -99,6 +123,10 @@ const Room = () => {
 
   const handleChangeTeam = () => {
     socket.emit("changeTeam", { roomId, team: myTeam });
+  };
+
+  const handleResetGame = () => {
+    socket.emit("resetGame", { roomId });
   };
 
   return (
@@ -142,28 +170,32 @@ const Room = () => {
                 type="text"
                 placeholder="cool prompt"
                 onChange={(e) => setPromptValue(e.target.value)}
+                required
                 value={promptValue}
                 disabled={roundInProgress}
               ></input>
             </form>
+            <h4>Prompts</h4>
             {prompts &&
               prompts.map((prompt) => {
                 return (
                   <div key={prompt.id}>
-                    <b>{prompt.text}</b>
-                    <button
-                      onClick={() =>
-                        socket.emit("deletePrompt", {
-                          roomId,
-                          promptId: prompt.id,
-                        })
-                      }
-                    >
+                    <b style={{ color: prompt.drawn ? "#eee" : "black" }}>
+                      {prompt.text}
+                    </b>
+                    <button onClick={() => handleDeletePrompt(prompt)}>
                       x
+                    </button>
+                    <button onClick={() => handleDrawPrompt(prompt)}>
+                      draw
+                    </button>
+                    <button onClick={() => handleSkipPrompt(prompt)}>
+                      skip
                     </button>
                   </div>
                 );
               })}
+            <button onClick={handleResetPrompts}> Reset Prompts</button>
             {users &&
               users.map((user) => {
                 return (
@@ -177,7 +209,7 @@ const Room = () => {
               <div>
                 {teams.redTeam && (
                   <div>
-                    <h4>RedTeam</h4>
+                    <h4>RedTeam Score: {teams.redTeam.points}</h4>
                     {myTeam !== "redTeam" && (
                       <button
                         disabled={roundInProgress}
@@ -198,7 +230,7 @@ const Room = () => {
                 )}
                 {teams.blueTeam && (
                   <div>
-                    <h4>BlueTeam</h4>
+                    <h4>BlueTeam Score: {teams.blueTeam.points}</h4>
                     {myTeam !== "blueTeam" && (
                       <button
                         disabled={roundInProgress}
@@ -220,6 +252,15 @@ const Room = () => {
               </div>
             )}
             <div>{JSON.stringify(users)}</div>
+            <div>
+              <h1>skipped prompts</h1>
+              {skippedPrompts &&
+                prompts.map((p) => {
+                  if (skippedPrompts.includes(p.id))
+                    return <div>Skiiped : {p.text}</div>;
+                })}
+            </div>
+            <button onClick={handleResetGame}>Reset Game</button>
           </>
         ) : (
           <div>

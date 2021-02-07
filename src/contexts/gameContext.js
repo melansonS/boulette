@@ -10,6 +10,7 @@ const GameProvider = ({ children }) => {
   const [timer, setTimer] = useState(undefined);
   const [myTeam, setMyTeam] = useState(undefined);
   const [teams, setTeams] = useState({});
+  const [skippedPrompts, setSkippedPrompts] = useState([]);
   const value = {
     name,
     setName,
@@ -25,6 +26,8 @@ const GameProvider = ({ children }) => {
     setMyTeam,
     teams,
     setTeams,
+    skippedPrompts,
+    setSkippedPrompts,
   };
 
   return <GameContext.Provider value={value}>{children}</GameContext.Provider>;

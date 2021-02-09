@@ -30,10 +30,13 @@ const Room = () => {
   const [nameValue, setNameValue] = useState("");
   const [promptValue, setPromptValue] = useState("");
 
-  useEffect(async () => {
-    const response = await fetch(`${URL}/check-rooms?id=${roomId}`);
-    const body = await response.json();
-    setNotFound(body.notFound);
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await fetch(`${URL}/check-rooms?id=${roomId}`);
+      const body = await response.json();
+      setNotFound(body.notFound);
+    };
+    fetchData();
   }, []);
   useEffect(() => {
     if (name && !notfound) {

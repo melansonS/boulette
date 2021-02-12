@@ -37,7 +37,7 @@ const Room = () => {
       setNotFound(body.notFound);
     };
     fetchData();
-  }, []);
+  }, [roomId]);
   useEffect(() => {
     if (name && !notfound) {
       socket.emit("joinRoom", { roomId, name });
@@ -261,6 +261,7 @@ const Room = () => {
                 prompts.map((p) => {
                   if (skippedPrompts.includes(p.id))
                     return <div>Skiiped : {p.text}</div>;
+                  else return null;
                 })}
             </div>
             <button onClick={handleResetGame}>Reset Game</button>

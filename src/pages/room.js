@@ -3,6 +3,9 @@ import { URL } from "../utils/constants";
 import { useParams, Link } from "react-router-dom";
 import GameContext from "../contexts/gameContext";
 import { socket } from "../utils/socket";
+import Layout from "../components/layout";
+import Button from "../components/button";
+import TextInput from "../components/textInput";
 
 const Room = () => {
   const {
@@ -133,7 +136,7 @@ const Room = () => {
   };
 
   return (
-    <div>
+    <Layout>
       {notfound && (
         <div>
           Room not found, go back <Link to="/">Home</Link>
@@ -147,7 +150,7 @@ const Room = () => {
               <>
                 <div>YOU ARE CURRENTLY PLAYING! </div>
                 {roundInProgress && (
-                  <button onClick={handleStopRound}>Stop Round!!</button>
+                  <Button onClick={handleStopRound} label="Stop Round" />
                 )}
               </>
             )}
@@ -156,8 +159,7 @@ const Room = () => {
                 <span
                   style={{
                     color: playingUser.team === "redTeam" ? "red" : "blue",
-                  }}
-                >
+                  }}>
                   [#]
                 </span>
                 {playingUser.username} is Currently playing c:
@@ -165,18 +167,17 @@ const Room = () => {
             )}
             <p>This is the room! {roomId}</p>
             {!roundInProgress && (
-              <button onClick={handleStartRound}>Start Round!!</button>
+              <Button onClick={handleStartRound} label="Start Round!" />
             )}
             Add New Prompt!
             <form onSubmit={(e) => handlePromptSubmit(e)}>
-              <input
-                type="text"
-                placeholder="cool prompt"
+              <TextInput
                 onChange={(e) => setPromptValue(e.target.value)}
-                required
-                value={promptValue}
+                placeholder="cool prompt"
                 disabled={roundInProgress}
-              ></input>
+                value={promptValue}
+                type="submit"
+              />
             </form>
             <h4>Prompts</h4>
             {prompts &&
@@ -186,40 +187,34 @@ const Room = () => {
                     <b style={{ color: prompt.drawn ? "#eee" : "black" }}>
                       {prompt.text}
                     </b>
-                    <button onClick={() => handleDeletePrompt(prompt)}>
-                      x
-                    </button>
-                    <button onClick={() => handleDrawPrompt(prompt)}>
-                      draw
-                    </button>
-                    <button onClick={() => handleSkipPrompt(prompt)}>
-                      skip
-                    </button>
+                    <Button
+                      onClick={() => handleDeletePrompt(prompt)}
+                      label="x"
+                    />
+
+                    <Button
+                      onClick={() => handleDrawPrompt(prompt)}
+                      label="draw"
+                    />
+                    <Button
+                      onClick={() => handleSkipPrompt(prompt)}
+                      label="skip"
+                    />
                   </div>
                 );
               })}
-            <button onClick={handleResetPrompts}> Reset Prompts</button>
-            {users &&
-              users.map((user) => {
-                return (
-                  <div>
-                    <b style={{ color: "#00cc99" }}>[#]</b>
-                    <b>{user.username}</b>
-                  </div>
-                );
-              })}
+            <Button onClick={handleResetPrompts} label=" Reset Prompts" />
             {teams && (
               <div>
                 {teams.redTeam && (
                   <div>
                     <h4>RedTeam Score: {teams.redTeam.points}</h4>
                     {myTeam !== "redTeam" && (
-                      <button
+                      <Button
                         disabled={roundInProgress}
                         onClick={handleChangeTeam}
-                      >
-                        Join Red Team
-                      </button>
+                        label="Join Red Team"
+                      />
                     )}
                     {teams.redTeam.members.map((member) => {
                       return (
@@ -235,12 +230,11 @@ const Room = () => {
                   <div>
                     <h4>BlueTeam Score: {teams.blueTeam.points}</h4>
                     {myTeam !== "blueTeam" && (
-                      <button
+                      <Button
                         disabled={roundInProgress}
                         onClick={handleChangeTeam}
-                      >
-                        Join Blue Team
-                      </button>
+                        label="Join Blue Team"
+                      />
                     )}
                     {teams.blueTeam.members.map((member) => {
                       return (
@@ -254,7 +248,6 @@ const Room = () => {
                 )}
               </div>
             )}
-            <div>{JSON.stringify(users)}</div>
             <div>
               <h1>skipped prompts</h1>
               {skippedPrompts &&
@@ -264,21 +257,33 @@ const Room = () => {
                   else return null;
                 })}
             </div>
-            <button onClick={handleResetGame}>Reset Game</button>
+            <Button
+              disabled={roundInProgress}
+              onClick={handleResetGame}
+              label="Reset Game"
+            />
+            {users &&
+              users.map((user) => {
+                return (
+                  <div>
+                    <b style={{ color: "#00cc99" }}>[#]</b>
+                    <b>{user.username}</b>
+                  </div>
+                );
+              })}
           </>
         ) : (
           <div>
             Enter your name!{" "}
             <form onSubmit={(e) => handleSubmitName(e)}>
-              <input
-                type="text"
-                placeholder="cool name"
+              <TextInput
                 onChange={(e) => setNameValue(e.target.value)}
-              ></input>
+                placeholder="cool name!"
+              />
             </form>
           </div>
         ))}
-    </div>
+    </Layout>
   );
 };
 

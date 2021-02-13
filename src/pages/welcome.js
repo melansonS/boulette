@@ -3,6 +3,9 @@ import { useHistory } from "react-router-dom";
 import GameContext from "../contexts/gameContext";
 import { makeRoomId } from "../utils/roomId";
 import { socket } from "../utils/socket";
+import Layout from "../components/layout";
+import Button from "../components/button";
+import TextInput from "../components/textInput";
 
 const Welcome = () => {
   const { name, setName } = useContext(GameContext);
@@ -27,27 +30,23 @@ const Welcome = () => {
   };
 
   return (
-    <div>
+    <Layout>
       <h1>Welcome! {name}</h1>
-      <input
-        type="text"
+      <TextInput
+        onChange={(e) => setName(e.target.value)}
         placeholder="Enter a username!"
         value={name}
-        onChange={(e) => setName(e.target.value)}
-      ></input>
-
-      <button onClick={handleCreateRoom}>Create Room</button>
+      />
+      <Button onClick={handleCreateRoom} label="Create Room" />
       <form onSubmit={(e) => handleJoinRoom(e)}>
-        <input
-          type="text"
-          name="room-name"
+        <TextInput
           onChange={(e) => setRoomdId(e.target.value)}
           placeholder="Enter room id"
           required
-        ></input>
-        <button type="submit">Join Room</button>
+        />
+        <Button type="submit" label="Join Room" />
       </form>
-    </div>
+    </Layout>
   );
 };
 

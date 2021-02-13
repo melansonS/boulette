@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { URL } from "../utils/constants";
+import { colors, URL } from "../utils/constants";
 import { useParams, Link } from "react-router-dom";
 import GameContext from "../contexts/gameContext";
 import { socket } from "../utils/socket";
@@ -159,13 +159,14 @@ const Room = () => {
                 <span
                   style={{
                     color: playingUser.team === "redTeam" ? "red" : "blue",
-                  }}>
+                  }}
+                >
                   [#]
                 </span>
                 {playingUser.username} is Currently playing c:
               </div>
             )}
-            <p>This is the room! {roomId}</p>
+            <h2>This is the room! {roomId}</h2>
             {!roundInProgress && (
               <Button onClick={handleStartRound} label="Start Round!" />
             )}
@@ -184,7 +185,11 @@ const Room = () => {
               prompts.map((prompt) => {
                 return (
                   <div key={prompt.id}>
-                    <b style={{ color: prompt.drawn ? "#eee" : "black" }}>
+                    <b
+                      style={{
+                        color: prompt.drawn ? "black" : `${colors.lightCyan}`,
+                      }}
+                    >
                       {prompt.text}
                     </b>
                     <Button

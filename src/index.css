@@ -5,9 +5,19 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-family: "Lexend Mega", sans-serif;
+  font-family: "Amatic SC", cursive;
+  font-size: 2em;
+  font-weight: bold;
+  background-color: #cdf7f6;
+  color: #102b3f;
+  background-color: #102b3f;
+  color: #cdf7f6;
+  /* color: white; */
+
+  /* 4C1A57 Russian Violet */
+  /* E8D33F Citrine */
 }
 
 input[type="button"] input[type="text"] {
-  font-family: "Lexend Mega", sans-serif;
+  font-family: "Amatic SC", cursive;
 }

@@ -21,3 +21,9 @@
   background-color: #bdbdbd;
   cursor: auto;
 }
+
+.show-members {
+  background-color: transparent;
+  font-weight: bold;
+  color: #cdf7f6;
+}

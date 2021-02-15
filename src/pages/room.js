@@ -8,6 +8,7 @@ import Button from "../components/button";
 import TextInput from "../components/textInput";
 import Boulette from "../components/boulette";
 import Modal from "../components/modal";
+import { IoChevronDown, IoChevronUp } from "react-icons/io5";
 import "./room.css";
 
 const Room = () => {
@@ -29,7 +30,8 @@ const Room = () => {
     skippedPrompts,
     setSkippedPrompts,
   } = useContext(GameContext);
-  const { roomId } = useParams();
+  const params = useParams();
+  const roomId = params.roomId.toLowerCase();
   const [notfound, setNotFound] = useState(false);
   const [users, setUsers] = useState([]);
   const [prompts, setPrompts] = useState([]);
@@ -37,6 +39,7 @@ const Room = () => {
   const [promptValue, setPromptValue] = useState("");
   const [showResetModal, setShowResetModal] = useState(false);
   const [showResetGameModal, setShowResetGameModal] = useState(false);
+  const [showTeamMembers, setShowTeamMembers] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -149,17 +152,29 @@ const Room = () => {
           Room not found, go back <br></br> <Link to="/">Home</Link>
         </div>
       )}
-      {timer && <div> TIMER : {timer}</div>}
       {!notfound &&
         (name ? (
           <>
-            {currentlyPlaying && (
-              <>
-                <div>YOU ARE CURRENTLY PLAYING! </div>
-                {roundInProgress && (
-                  <Button onClick={handleStopRound} label="Stop Round" />
+            {roundInProgress && (
+              <Modal>
+                <div> TIMER : {timer}</div>
+                {currentlyPlaying ? (
+                  <>
+                    <div>YOU ARE CURRENTLY PLAYING! </div>
+                    <Button onClick={handleStopRound} label="Stop Round" />
+                  </>
+                ) : (
+                  <div>
+                    <span
+                      style={{
+                        color: playingUser.team === "redTeam" ? "red" : "blue",
+                      }}>
+                      [#]
+                    </span>
+                    {playingUser.username} is Currently playing c:
+                  </div>
                 )}
-              </>
+              </Modal>
             )}
             {!currentlyPlaying && roundInProgress && (
               <div>
@@ -178,26 +193,37 @@ const Room = () => {
             </div>
             {teams && (
               <div className="teams">
+                <Button
+                  className="show-members"
+                  onClick={() => setShowTeamMembers(!showTeamMembers)}
+                  label={showTeamMembers ? <IoChevronDown /> : <IoChevronUp />}
+                />
                 {teams.redTeam && (
                   <div className="team-container">
                     <h3>
                       <u>RedTeam:</u> {teams.redTeam.points}
                     </h3>
-                    {teams.redTeam.members.map((member) => {
-                      return (
-                        <div>
-                          <b style={{ color: "#C70039" }}>[#]</b>
-                          <b>{member.username}</b>
-                        </div>
-                      );
-                    })}
-                    {myTeam !== "redTeam" && (
-                      <Button
-                        disabled={roundInProgress}
-                        onClick={handleChangeTeam}
-                        label="Join"
-                      />
-                    )}
+                    <div
+                      className={`team-members ${
+                        showTeamMembers ? "hidden-team-members" : ""
+                      }`}
+                      style={{ "--height": teams.redTeam.members.length }}>
+                      {teams.redTeam.members.map((member) => {
+                        return (
+                          <div>
+                            <b style={{ color: "#C70039" }}>[#]</b>
+                            <b>{member.username}</b>
+                          </div>
+                        );
+                      })}
+                      {myTeam !== "redTeam" && (
+                        <Button
+                          disabled={roundInProgress}
+                          onClick={handleChangeTeam}
+                          label="Join"
+                        />
+                      )}
+                    </div>
                   </div>
                 )}
                 {teams.blueTeam && (
@@ -205,26 +231,31 @@ const Room = () => {
                     <h3>
                       <u>BlueTeam:</u> {teams.blueTeam.points}
                     </h3>
-                    {teams.blueTeam.members.map((member) => {
-                      return (
-                        <div>
-                          <b style={{ color: "#1B87A8" }}>[#]</b>
-                          <b>{member.username}</b>
-                        </div>
-                      );
-                    })}
-                    {myTeam !== "blueTeam" && (
-                      <Button
-                        disabled={roundInProgress}
-                        onClick={handleChangeTeam}
-                        label="Join"
-                      />
-                    )}
+                    <div
+                      className={`team-members ${
+                        showTeamMembers ? "hidden-team-members" : ""
+                      }`}
+                      style={{ "--height": teams.blueTeam.members.length }}>
+                      {teams.blueTeam.members.map((member) => {
+                        return (
+                          <div>
+                            <b style={{ color: "#1B87A8" }}>[#]</b>
+                            <b>{member.username}</b>
+                          </div>
+                        );
+                      })}
+                      {myTeam !== "blueTeam" && (
+                        <Button
+                          disabled={roundInProgress}
+                          onClick={handleChangeTeam}
+                          label="Join"
+                        />
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
             )}
-            <div className="divider"></div>
             <Button
               className="start-round"
               disabled={roundInProgress}
@@ -307,15 +338,6 @@ const Room = () => {
                 />
               </Modal>
             )}
-            {users &&
-              users.map((user) => {
-                return (
-                  <div>
-                    <b style={{ color: "#00cc99" }}>[#]</b>
-                    <b>{user.username}</b>
-                  </div>
-                );
-              })}
           </>
         ) : (
           <div className="enter-your-name">

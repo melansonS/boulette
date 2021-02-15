@@ -6,6 +6,9 @@ import { socket } from "../utils/socket";
 import Layout from "../components/layout";
 import Button from "../components/button";
 import TextInput from "../components/textInput";
+import Boulette from "../components/boulette";
+import Modal from "../components/modal";
+import "./room.css";
 
 const Room = () => {
   const {
@@ -32,6 +35,8 @@ const Room = () => {
   const [prompts, setPrompts] = useState([]);
   const [nameValue, setNameValue] = useState("");
   const [promptValue, setPromptValue] = useState("");
+  const [showResetModal, setShowResetModal] = useState(false);
+  const [showResetGameModal, setShowResetGameModal] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -118,6 +123,7 @@ const Room = () => {
 
   const handleResetPrompts = () => {
     socket.emit("resetPrompts", { roomId });
+    setShowResetModal(false);
   };
 
   const handleStartRound = () => {
@@ -133,13 +139,14 @@ const Room = () => {
 
   const handleResetGame = () => {
     socket.emit("resetGame", { roomId });
+    setShowResetGameModal(false);
   };
 
   return (
     <Layout>
       {notfound && (
-        <div>
-          Room not found, go back <Link to="/">Home</Link>
+        <div className="not-found">
+          Room not found, go back <br></br> <Link to="/">Home</Link>
         </div>
       )}
       {timer && <div> TIMER : {timer}</div>}
@@ -159,17 +166,71 @@ const Room = () => {
                 <span
                   style={{
                     color: playingUser.team === "redTeam" ? "red" : "blue",
-                  }}
-                >
+                  }}>
                   [#]
                 </span>
                 {playingUser.username} is Currently playing c:
               </div>
             )}
-            <h2>This is the room! {roomId}</h2>
-            {!roundInProgress && (
-              <Button onClick={handleStartRound} label="Start Round!" />
+            <div className="header">
+              <h1>Boulette!</h1>
+              <h4>Room Id: {roomId}</h4>
+            </div>
+            {teams && (
+              <div className="teams">
+                {teams.redTeam && (
+                  <div className="team-container">
+                    <h3>
+                      <u>RedTeam:</u> {teams.redTeam.points}
+                    </h3>
+                    {teams.redTeam.members.map((member) => {
+                      return (
+                        <div>
+                          <b style={{ color: "#C70039" }}>[#]</b>
+                          <b>{member.username}</b>
+                        </div>
+                      );
+                    })}
+                    {myTeam !== "redTeam" && (
+                      <Button
+                        disabled={roundInProgress}
+                        onClick={handleChangeTeam}
+                        label="Join"
+                      />
+                    )}
+                  </div>
+                )}
+                {teams.blueTeam && (
+                  <div className="team-container">
+                    <h3>
+                      <u>BlueTeam:</u> {teams.blueTeam.points}
+                    </h3>
+                    {teams.blueTeam.members.map((member) => {
+                      return (
+                        <div>
+                          <b style={{ color: "#1B87A8" }}>[#]</b>
+                          <b>{member.username}</b>
+                        </div>
+                      );
+                    })}
+                    {myTeam !== "blueTeam" && (
+                      <Button
+                        disabled={roundInProgress}
+                        onClick={handleChangeTeam}
+                        label="Join"
+                      />
+                    )}
+                  </div>
+                )}
+              </div>
             )}
+            <div className="divider"></div>
+            <Button
+              className="start-round"
+              disabled={roundInProgress}
+              onClick={handleStartRound}
+              label="Start Round!"
+            />
             Add New Prompt!
             <form onSubmit={(e) => handlePromptSubmit(e)}>
               <TextInput
@@ -180,16 +241,19 @@ const Room = () => {
                 type="submit"
               />
             </form>
-            <h4>Prompts</h4>
-            {prompts &&
-              prompts.map((prompt) => {
-                return (
-                  <div key={prompt.id}>
-                    <b
+            <h3>
+              <u>Prompts</u>
+            </h3>
+            {prompts && (
+              <div className="prompts">
+                {prompts.map((prompt) => {
+                  return (
+                    <div key={prompt.id}>
+                      <Boulette className={prompt.drawn ? "drawn" : ""} />
+                      {/* <b
                       style={{
                         color: prompt.drawn ? "black" : `${colors.lightCyan}`,
-                      }}
-                    >
+                      }}>
                       {prompt.text}
                     </b>
                     <Button
@@ -204,54 +268,21 @@ const Room = () => {
                     <Button
                       onClick={() => handleSkipPrompt(prompt)}
                       label="skip"
-                    />
-                  </div>
-                );
-              })}
-            <Button onClick={handleResetPrompts} label=" Reset Prompts" />
-            {teams && (
-              <div>
-                {teams.redTeam && (
-                  <div>
-                    <h4>RedTeam Score: {teams.redTeam.points}</h4>
-                    {myTeam !== "redTeam" && (
-                      <Button
-                        disabled={roundInProgress}
-                        onClick={handleChangeTeam}
-                        label="Join Red Team"
-                      />
-                    )}
-                    {teams.redTeam.members.map((member) => {
-                      return (
-                        <div>
-                          <b style={{ color: "#C70039" }}>[#]</b>
-                          <b>{member.username}</b>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-                {teams.blueTeam && (
-                  <div>
-                    <h4>BlueTeam Score: {teams.blueTeam.points}</h4>
-                    {myTeam !== "blueTeam" && (
-                      <Button
-                        disabled={roundInProgress}
-                        onClick={handleChangeTeam}
-                        label="Join Blue Team"
-                      />
-                    )}
-                    {teams.blueTeam.members.map((member) => {
-                      return (
-                        <div>
-                          <b style={{ color: "#1B87A8" }}>[#]</b>
-                          <b>{member.username}</b>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
+                    /> */}
+                    </div>
+                  );
+                })}
               </div>
+            )}
+            <Button
+              onClick={() => setShowResetModal(true)}
+              label="Reset Prompts"
+            />
+            {showResetModal && (
+              <Modal closeModal={() => setShowResetModal(false)}>
+                <h3>Are you sure you want to reset the prompts?</h3>
+                <Button onClick={handleResetPrompts} label="Reset Prompts" />
+              </Modal>
             )}
             <div>
               <h1>skipped prompts</h1>
@@ -263,10 +294,19 @@ const Room = () => {
                 })}
             </div>
             <Button
-              disabled={roundInProgress}
-              onClick={handleResetGame}
+              onClick={() => setShowResetGameModal(true)}
               label="Reset Game"
             />
+            {showResetGameModal && (
+              <Modal closeModal={() => setShowResetGameModal(false)}>
+                <h3>Are you sure you want to reset the Game?</h3>
+                <Button
+                  disabled={roundInProgress}
+                  onClick={handleResetGame}
+                  label="Reset Game"
+                />
+              </Modal>
+            )}
             {users &&
               users.map((user) => {
                 return (
@@ -278,7 +318,7 @@ const Room = () => {
               })}
           </>
         ) : (
-          <div>
+          <div className="enter-your-name">
             Enter your name!{" "}
             <form onSubmit={(e) => handleSubmitName(e)}>
               <TextInput

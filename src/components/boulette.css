@@ -1,0 +1,10 @@
+.boulette {
+  filter: invert(90%) sepia(4%) saturate(2653%) hue-rotate(147deg)
+    brightness(121%) contrast(93%);
+  width: 40px;
+}
+
+.drawn {
+  filter: invert(25%) sepia(4%) saturate(2653%) hue-rotate(147deg)
+    brightness(121%) contrast(93%);
+}

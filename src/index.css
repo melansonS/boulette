@@ -8,16 +8,17 @@ body {
   font-family: "Amatic SC", cursive;
   font-size: 2em;
   font-weight: bold;
-  background-color: #cdf7f6;
-  color: #102b3f;
-  background-color: #102b3f;
+  background-color: #102b3f; /*cyan-blue*/
   color: #cdf7f6;
-  /* color: white; */
-
-  /* 4C1A57 Russian Violet */
-  /* E8D33F Citrine */
 }
 
 input[type="button"] input[type="text"] {
   font-family: "Amatic SC", cursive;
+}
+
+@media only screen and (max-width: 600px) {
+  body {
+    /* background-color: lightblue; */
+    font-size: 1.5em;
+  }
 }

@@ -1,5 +1,5 @@
-export const URL = "http://localhost:4001";
-// export const URL = "https://boulette-server.herokuapp.com";
+// export const URL = "http://localhost:4001";
+export const URL = "https://boulette-server.herokuapp.com";
 
 export const colors = {
   blue: "#1B87A8",
@@ -9,6 +9,7 @@ export const colors = {
   purple: "#4F359B",
   russianPurple: "#4C1A57",
   lightCyan: "#CDF7F6",
+  cyanBlue: "#102b3f",
   Citrine: "#E8D33F",
 };
 

@@ -2,8 +2,8 @@
   font-family: "Amatic SC", cursive;
   font-size: 1em;
   font-weight: bold;
-  color: #102b3f;
-  background-color: #ffbe0b;
+  color: #102b3f; /*cyan-blue*/
+  background-color: #ffbe0b; /*Mango*/
   outline: none;
   border: none;
   border-radius: 12px;
@@ -15,4 +15,9 @@
   cursor: pointer;
   -webkit-box-shadow: 1px 1px 10px 1px rgba(255, 255, 255, 0.35);
   box-shadow: 1px 1px 10px 1px rgba(255, 255, 255, 0.35);
+}
+
+.button:disabled {
+  background-color: #bdbdbd;
+  cursor: auto;
 }

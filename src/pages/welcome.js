@@ -6,6 +6,7 @@ import { socket } from "../utils/socket";
 import Layout from "../components/layout";
 import Button from "../components/button";
 import TextInput from "../components/textInput";
+import "./welcome.css";
 
 const Welcome = () => {
   const { name, setName } = useContext(GameContext);
@@ -31,21 +32,30 @@ const Welcome = () => {
 
   return (
     <Layout>
-      <h1>Welcome! {name}</h1>
-      <TextInput
-        onChange={(e) => setName(e.target.value)}
-        placeholder="Enter a username!"
-        value={name}
-      />
-      <Button onClick={handleCreateRoom} label="Create Room" />
-      <form onSubmit={(e) => handleJoinRoom(e)}>
+      <h1>Boulette!</h1>
+      <div className="welcome-page">
         <TextInput
-          onChange={(e) => setRoomdId(e.target.value)}
-          placeholder="Enter room id"
-          required
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Enter a username!"
+          value={name}
         />
-        <Button type="submit" label="Join Room" />
-      </form>
+        <Button
+          className="create-room"
+          onClick={handleCreateRoom}
+          label="Create Room"
+        />
+        <form onSubmit={(e) => handleJoinRoom(e)}>
+          <div className="welcome-form">
+            <TextInput
+              className="input"
+              onChange={(e) => setRoomdId(e.target.value)}
+              placeholder="room id"
+              required
+            />
+            <Button type="submit" label="Join Room" />
+          </div>
+        </form>
+      </div>
     </Layout>
   );
 };

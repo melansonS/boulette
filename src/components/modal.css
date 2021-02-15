@@ -28,10 +28,8 @@
   outline: none;
   border: none;
   background: none;
-  font-family: "Amatic SC", cursive;
-  font-weight: bold;
   font-size: 1em;
-  color: white;
+  color: #cdf7f6;
 }
 
 .close:hover {

@@ -1,3 +1,7 @@
+h1 {
+  margin-bottom: 1.5em;
+}
+
 .welcome-page {
   display: flex;
   flex-direction: column;
@@ -5,15 +9,14 @@
 
 .welcome-form {
   display: flex;
+  justify-content: space-between;
 }
 
 .welcome-form button,
 .welcome-form input {
-  flex-grow: 1;
-  flex-basis: 25%;
-  width: 50%;
+  width: 45%;
 }
 
 .create-room {
-  margin: 1em 0;
+  margin: 1.5em 0;
 }

@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
+import { IoChevronDown, IoChevronUp } from "react-icons/io5";
 import { colors, URL } from "../utils/constants";
 import { useParams, Link } from "react-router-dom";
 import GameContext from "../contexts/gameContext";
@@ -8,9 +9,9 @@ import Button from "../components/button";
 import TextInput from "../components/textInput";
 import Boulette from "../components/boulette";
 import Modal from "../components/modal";
-import { IoChevronDown, IoChevronUp } from "react-icons/io5";
-import "./room.css";
 import BouleAnim from "../components/bouleAnim";
+import PromptButtons from "../components/promptButtons";
+import "./room.css";
 
 const Room = () => {
   const {
@@ -41,6 +42,7 @@ const Room = () => {
   const [showResetModal, setShowResetModal] = useState(false);
   const [showResetGameModal, setShowResetGameModal] = useState(false);
   const [showTeamMembers, setShowTeamMembers] = useState(false);
+  const [yourPrompt, setYourPrompt] = useState(prompts[0]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -69,10 +71,12 @@ const Room = () => {
     socket.on("allPrompts", (data) => {
       console.log("prompt DATA", data);
       setPrompts(data);
+      setYourPrompt(data[0]);
     });
     socket.on("promptDrawn", (data) => {
       setTeams(data.teams);
       setPrompts(data.prompts);
+      setYourPrompt(data.prompts[1]);
     });
     socket.on("roundStart", (data) => {
       console.log("ROUND START?? data", data);
@@ -157,13 +161,18 @@ const Room = () => {
         (name ? (
           <>
             {roundInProgress && (
-              <Modal closeModal={() => handleStopRound()}>
+              <Modal canClose={false} closeModal={() => handleStopRound()}>
                 <div> TIMER : {timer}</div>
                 {currentlyPlaying ? (
                   <>
                     <div>YOU ARE CURRENTLY PLAYING! </div>
-                    <BouleAnim text={prompts[0].text} />
-
+                    <BouleAnim key={yourPrompt.id} text={yourPrompt.text} />
+                    <PromptButtons
+                      prompt={yourPrompt}
+                      handleDeletePrompt={handleDeletePrompt}
+                      handleDrawPrompt={handleDrawPrompt}
+                      handleSkipPrompt={handleSkipPrompt}
+                    />
                     <Button onClick={handleStopRound} label="Stop Round" />
                   </>
                 ) : (
@@ -171,7 +180,8 @@ const Room = () => {
                     <span
                       style={{
                         color: playingUser.team === "redTeam" ? "red" : "blue",
-                      }}>
+                      }}
+                    >
                       [#]
                     </span>
                     {playingUser.username} is Currently playing c:
@@ -184,7 +194,8 @@ const Room = () => {
                 <span
                   style={{
                     color: playingUser.team === "redTeam" ? "red" : "blue",
-                  }}>
+                  }}
+                >
                   [#]
                 </span>
                 {playingUser.username} is Currently playing c:
@@ -210,7 +221,8 @@ const Room = () => {
                       className={`team-members ${
                         showTeamMembers ? "hidden-team-members" : ""
                       }`}
-                      style={{ "--height": teams.redTeam.members.length }}>
+                      style={{ "--height": teams.redTeam.members.length }}
+                    >
                       {teams.redTeam.members.map((member) => {
                         return (
                           <div>
@@ -238,7 +250,8 @@ const Room = () => {
                       className={`team-members ${
                         showTeamMembers ? "hidden-team-members" : ""
                       }`}
-                      style={{ "--height": teams.blueTeam.members.length }}>
+                      style={{ "--height": teams.blueTeam.members.length }}
+                    >
                       {teams.blueTeam.members.map((member) => {
                         return (
                           <div>
@@ -261,7 +274,7 @@ const Room = () => {
             )}
             <Button
               className="start-round"
-              disabled={roundInProgress || !prompts[0]}
+              disabled={roundInProgress || prompts.length < 3}
               onClick={handleStartRound}
               label="Start Round!"
             />
@@ -284,25 +297,6 @@ const Room = () => {
                   return (
                     <div key={prompt.id}>
                       <Boulette className={prompt.drawn ? "drawn" : ""} />
-                      {/* <b
-                      style={{
-                        color: prompt.drawn ? "black" : `${colors.lightCyan}`,
-                      }}>
-                      {prompt.text}
-                    </b>
-                    <Button
-                      onClick={() => handleDeletePrompt(prompt)}
-                      label="x"
-                    />
-
-                    <Button
-                      onClick={() => handleDrawPrompt(prompt)}
-                      label="draw"
-                    />
-                    <Button
-                      onClick={() => handleSkipPrompt(prompt)}
-                      label="skip"
-                    /> */}
                     </div>
                   );
                 })}

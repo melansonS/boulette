@@ -1,0 +1,18 @@
+.prompt-buttons {
+  width: 80%;
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 1em;
+}
+
+.prompt-buttons .button {
+  width: 25%;
+  text-align: center;
+}
+
+@media only screen and (max-width: 750px) {
+  .prompt-buttons .button {
+    width: 30%;
+    padding: 5px;
+  }
+}

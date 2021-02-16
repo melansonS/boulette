@@ -2,7 +2,7 @@ import react from "react";
 import { IoCloseCircleOutline } from "react-icons/io5";
 import "./modal.css";
 
-const Modal = ({ children, closeModal, className }) => {
+const Modal = ({ children, closeModal, className, canClose = true }) => {
   const handleCloseModal = () => {
     closeModal();
   };
@@ -11,12 +11,16 @@ const Modal = ({ children, closeModal, className }) => {
     <>
       <div className={`modal-content ${className}`}>
         {children}
-
-        <button className="close" onClick={handleCloseModal}>
-          <IoCloseCircleOutline />
-        </button>
+        {canClose && (
+          <button className="close" onClick={handleCloseModal}>
+            <IoCloseCircleOutline />
+          </button>
+        )}
       </div>
-      <div className="modal-div" onClick={handleCloseModal}></div>
+      <div
+        className="modal-div"
+        onClick={canClose ? handleCloseModal : undefined}
+      ></div>
     </>
   );
 };

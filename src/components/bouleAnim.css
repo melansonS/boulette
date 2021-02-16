@@ -1,5 +1,6 @@
 .container {
   transform: rotate(var(--rotate));
+  transition: 0.3s;
   position: relative;
   display: flex;
   justify-content: center;

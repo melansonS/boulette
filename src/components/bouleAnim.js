@@ -22,11 +22,7 @@ const BouleAnim = ({ text }) => {
 
   return (
     <div className="container" style={{ "--rotate": `${rotation}deg` }}>
-      {frame === 3 && (
-        <p className="text">
-          text {text} {rotation}
-        </p>
-      )}
+      {frame === 3 && <p className="text">{text}</p>}
       <img className="image" src={`images/boulette${frame}.png` || ""}></img>
     </div>
   );

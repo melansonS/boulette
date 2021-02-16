@@ -157,7 +157,7 @@ const Room = () => {
         (name ? (
           <>
             {roundInProgress && (
-              <Modal closeModal={() => handleStopRound}>
+              <Modal closeModal={() => handleStopRound()}>
                 <div> TIMER : {timer}</div>
                 {currentlyPlaying ? (
                   <>
@@ -261,7 +261,7 @@ const Room = () => {
             )}
             <Button
               className="start-round"
-              disabled={roundInProgress}
+              disabled={roundInProgress || !prompts[0]}
               onClick={handleStartRound}
               label="Start Round!"
             />

@@ -10,6 +10,7 @@ import Boulette from "../components/boulette";
 import Modal from "../components/modal";
 import { IoChevronDown, IoChevronUp } from "react-icons/io5";
 import "./room.css";
+import BouleAnim from "../components/bouleAnim";
 
 const Room = () => {
   const {
@@ -156,11 +157,13 @@ const Room = () => {
         (name ? (
           <>
             {roundInProgress && (
-              <Modal>
+              <Modal closeModal={() => handleStopRound}>
                 <div> TIMER : {timer}</div>
                 {currentlyPlaying ? (
                   <>
                     <div>YOU ARE CURRENTLY PLAYING! </div>
+                    <BouleAnim text={prompts[0].text} />
+
                     <Button onClick={handleStopRound} label="Stop Round" />
                   </>
                 ) : (

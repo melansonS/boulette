@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { IoChevronDown, IoChevronUp } from "react-icons/io5";
-import { URL } from "../utils/constants";
+import { URL, colors } from "../utils/constants";
 import { useParams, Link } from "react-router-dom";
 import GameContext from "../contexts/gameContext";
 import { socket } from "../utils/socket";
@@ -192,6 +192,7 @@ const Room = () => {
                   <>
                     <BouleAnim key={yourPrompt.id} text={yourPrompt.text} />
                     <PromptButtons
+                      key={`buttons-${yourPrompt.id}`}
                       prompt={yourPrompt}
                       handleDeletePrompt={handleDeletePrompt}
                       handleDrawPrompt={handleDrawPrompt}
@@ -204,8 +205,12 @@ const Room = () => {
                   <div>
                     <span
                       style={{
-                        color: playingUser.team === "redTeam" ? "red" : "blue",
-                      }}>
+                        color:
+                          playingUser.team === "redTeam"
+                            ? colors.red
+                            : colors.blue,
+                      }}
+                    >
                       [#]
                     </span>
                     {playingUser.username} is Currently playing c:
@@ -217,8 +222,10 @@ const Room = () => {
               <div>
                 <span
                   style={{
-                    color: playingUser.team === "redTeam" ? "red" : "blue",
-                  }}>
+                    color:
+                      playingUser.team === "redTeam" ? colors.red : colors.blue,
+                  }}
+                >
                   [#]
                 </span>
                 {playingUser.username} is Currently playing c:
@@ -244,7 +251,8 @@ const Room = () => {
                       className={`team-members ${
                         showTeamMembers ? "hidden-team-members" : ""
                       }`}
-                      style={{ "--height": teams.redTeam.members.length }}>
+                      style={{ "--height": teams.redTeam.members.length }}
+                    >
                       {teams.redTeam.members.map((member) => {
                         return (
                           <div>
@@ -272,7 +280,8 @@ const Room = () => {
                       className={`team-members ${
                         showTeamMembers ? "hidden-team-members" : ""
                       }`}
-                      style={{ "--height": teams.blueTeam.members.length }}>
+                      style={{ "--height": teams.blueTeam.members.length }}
+                    >
                       {teams.blueTeam.members.map((member) => {
                         return (
                           <div>

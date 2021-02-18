@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { IoChevronDown, IoChevronUp } from "react-icons/io5";
-import { colors, URL } from "../utils/constants";
+import { URL } from "../utils/constants";
 import { useParams, Link } from "react-router-dom";
 import GameContext from "../contexts/gameContext";
 import { socket } from "../utils/socket";
@@ -42,7 +42,7 @@ const Room = () => {
   const [showResetModal, setShowResetModal] = useState(false);
   const [showResetGameModal, setShowResetGameModal] = useState(false);
   const [showTeamMembers, setShowTeamMembers] = useState(false);
-  const [yourPrompt, setYourPrompt] = useState(prompts[0]);
+  const [yourPrompt, setYourPrompt] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -71,12 +71,19 @@ const Room = () => {
     socket.on("allPrompts", (data) => {
       console.log("prompt DATA", data);
       setPrompts(data);
-      setYourPrompt(data[0]);
+      setYourPrompt(data[data.findIndex((p) => !p.drawn)]);
     });
     socket.on("promptDrawn", (data) => {
       setTeams(data.teams);
       setPrompts(data.prompts);
-      setYourPrompt(data.prompts[1]);
+      const available = data.prompts.filter((p) => !p.drawn);
+      console.log(available, data.prompts);
+      if (available.length === 0) {
+        handleResetPrompts();
+        return handleStopRound();
+      }
+      const index = Math.floor(Math.random() * available.length);
+      setYourPrompt(available[index]);
     });
     socket.on("roundStart", (data) => {
       console.log("ROUND START?? data", data);
@@ -121,12 +128,28 @@ const Room = () => {
 
   const handleDeletePrompt = (prompt) => {
     socket.emit("deletePrompt", { roomId, promptId: prompt.id });
+    if (!prompts.find((p) => p.id !== prompt.id && !p.drawn)) {
+      handleStopRound();
+    }
   };
   const handleDrawPrompt = (prompt) => {
     socket.emit("drawPrompt", { roomId, promptId: prompt.id, team: myTeam });
   };
   const handleSkipPrompt = (prompt) => {
     setSkippedPrompts([...skippedPrompts, prompt.id]);
+    const notDrawn = prompts.filter((p) => !p.drawn && p.id !== prompt.id);
+    const available = notDrawn.filter(
+      (p) => !skippedPrompts.find((skipped) => skipped.id === p.id)
+    );
+    console.log(available, prompts);
+    if (available.length === 0) {
+      if (notDrawn.length === 0) {
+        return setYourPrompt(prompt);
+      }
+      setYourPrompt(notDrawn[0]);
+    }
+    const index = Math.floor(Math.random() * available.length);
+    setYourPrompt(available[index]);
   };
 
   const handleResetPrompts = () => {
@@ -135,10 +158,12 @@ const Room = () => {
   };
 
   const handleStartRound = () => {
+    if (!yourPrompt) return;
     socket.emit("startRound", { roomId, name, team: myTeam });
   };
   const handleStopRound = () => {
     socket.emit("stopRound", { roomId });
+    setSkippedPrompts([]);
   };
 
   const handleChangeTeam = () => {
@@ -162,10 +187,9 @@ const Room = () => {
           <>
             {roundInProgress && (
               <Modal canClose={false} closeModal={() => handleStopRound()}>
-                <div> TIMER : {timer}</div>
-                {currentlyPlaying ? (
+                <div> TIMER : {timer && Math.ceil(timer / 1000)}</div>
+                {currentlyPlaying && yourPrompt && (
                   <>
-                    <div>YOU ARE CURRENTLY PLAYING! </div>
                     <BouleAnim key={yourPrompt.id} text={yourPrompt.text} />
                     <PromptButtons
                       prompt={yourPrompt}
@@ -175,13 +199,13 @@ const Room = () => {
                     />
                     <Button onClick={handleStopRound} label="Stop Round" />
                   </>
-                ) : (
+                )}
+                {!currentlyPlaying && (
                   <div>
                     <span
                       style={{
                         color: playingUser.team === "redTeam" ? "red" : "blue",
-                      }}
-                    >
+                      }}>
                       [#]
                     </span>
                     {playingUser.username} is Currently playing c:
@@ -194,8 +218,7 @@ const Room = () => {
                 <span
                   style={{
                     color: playingUser.team === "redTeam" ? "red" : "blue",
-                  }}
-                >
+                  }}>
                   [#]
                 </span>
                 {playingUser.username} is Currently playing c:
@@ -221,8 +244,7 @@ const Room = () => {
                       className={`team-members ${
                         showTeamMembers ? "hidden-team-members" : ""
                       }`}
-                      style={{ "--height": teams.redTeam.members.length }}
-                    >
+                      style={{ "--height": teams.redTeam.members.length }}>
                       {teams.redTeam.members.map((member) => {
                         return (
                           <div>
@@ -250,8 +272,7 @@ const Room = () => {
                       className={`team-members ${
                         showTeamMembers ? "hidden-team-members" : ""
                       }`}
-                      style={{ "--height": teams.blueTeam.members.length }}
-                    >
+                      style={{ "--height": teams.blueTeam.members.length }}>
                       {teams.blueTeam.members.map((member) => {
                         return (
                           <div>
@@ -312,19 +333,12 @@ const Room = () => {
                 <Button onClick={handleResetPrompts} label="Reset Prompts" />
               </Modal>
             )}
-            <div>
-              <h1>skipped prompts</h1>
-              {skippedPrompts &&
-                prompts.map((p) => {
-                  if (skippedPrompts.includes(p.id))
-                    return <div>Skiiped : {p.text}</div>;
-                  else return null;
-                })}
+            <div className="reset-game">
+              <Button
+                onClick={() => setShowResetGameModal(true)}
+                label="Reset Game"
+              />
             </div>
-            <Button
-              onClick={() => setShowResetGameModal(true)}
-              label="Reset Game"
-            />
             {showResetGameModal && (
               <Modal closeModal={() => setShowResetGameModal(false)}>
                 <h3>Are you sure you want to reset the Game?</h3>

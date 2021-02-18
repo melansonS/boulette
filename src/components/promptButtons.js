@@ -1,5 +1,6 @@
 import React from "react";
 import Button from "./button";
+
 import "./promptButtons.css";
 
 const PromptButtons = ({
@@ -10,7 +11,7 @@ const PromptButtons = ({
 }) => {
   return (
     <div className="prompt-buttons">
-      <Button onClick={() => handleDrawPrompt(prompt)} label="draw" />
+      <Button onClick={() => handleDrawPrompt(prompt)} label="+1" />
       <Button onClick={() => handleSkipPrompt(prompt)} label="skip" />
       <Button onClick={() => handleDeletePrompt(prompt)} label="delete" />
     </div>

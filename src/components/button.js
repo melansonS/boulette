@@ -1,4 +1,6 @@
 import React from "react";
+import { IoTrashOutline } from "react-icons/io5";
+
 import "./button.css";
 
 const Button = ({ onClick, label, type, className, disabled }) => {
@@ -8,7 +10,7 @@ const Button = ({ onClick, label, type, className, disabled }) => {
       onClick={onClick}
       type={type}
       disabled={disabled}>
-      {label}
+      {label === "delete" ? <IoTrashOutline /> : label}
     </button>
   );
 };

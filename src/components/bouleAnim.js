@@ -3,12 +3,12 @@ import "./bouleAnim.css";
 
 const BouleAnim = ({ text }) => {
   const [frame, setFrame] = useState(1);
-  const [rotation, setRotation] = useState(Math.ceil(Math.random() * 15));
+  const [rotation, setRotation] = useState(Math.ceil(Math.random() * 12));
 
   useEffect(() => {
     let myInterval = setInterval(() => {
       if (frame < 3) {
-        let random = Math.ceil(Math.random() * 15);
+        let random = Math.ceil(Math.random() * 12);
         random = random % 2 === 0 ? random : random * -1;
         setRotation(random);
         console.log({ random });
@@ -16,7 +16,7 @@ const BouleAnim = ({ text }) => {
       } else {
         clearInterval(myInterval);
       }
-    }, 800);
+    }, 600);
     return () => clearInterval(myInterval);
   });
 

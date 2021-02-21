@@ -209,8 +209,7 @@ const Room = () => {
                           playingUser.team === "redTeam"
                             ? colors.red
                             : colors.blue,
-                      }}
-                    >
+                      }}>
                       [#]
                     </span>
                     {playingUser.username} is Currently playing c:
@@ -224,8 +223,7 @@ const Room = () => {
                   style={{
                     color:
                       playingUser.team === "redTeam" ? colors.red : colors.blue,
-                  }}
-                >
+                  }}>
                   [#]
                 </span>
                 {playingUser.username} is Currently playing c:
@@ -251,8 +249,7 @@ const Room = () => {
                       className={`team-members ${
                         showTeamMembers ? "hidden-team-members" : ""
                       }`}
-                      style={{ "--height": teams.redTeam.members.length }}
-                    >
+                      style={{ "--height": teams.redTeam.members.length }}>
                       {teams.redTeam.members.map((member) => {
                         return (
                           <div>
@@ -280,8 +277,7 @@ const Room = () => {
                       className={`team-members ${
                         showTeamMembers ? "hidden-team-members" : ""
                       }`}
-                      style={{ "--height": teams.blueTeam.members.length }}
-                    >
+                      style={{ "--height": teams.blueTeam.members.length }}>
                       {teams.blueTeam.members.map((member) => {
                         return (
                           <div>

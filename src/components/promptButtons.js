@@ -12,7 +12,7 @@ const PromptButtons = ({
   const [confirmDelete, setConfirmDelete] = useState(false);
   return (
     <div className="prompt-buttons">
-      <Button onClick={() => handleDrawPrompt(prompt)} label="+1" />
+      <Button onClick={() => handleDrawPrompt(prompt)} icon="success" />
       <Button onClick={() => handleSkipPrompt(prompt)} label="skip" />
       {confirmDelete ? (
         <Button
@@ -21,7 +21,7 @@ const PromptButtons = ({
           label="delete"
         />
       ) : (
-        <Button onClick={() => setConfirmDelete(true)} label="delete" />
+        <Button onClick={() => setConfirmDelete(true)} icon="delete" />
       )}
     </div>
   );

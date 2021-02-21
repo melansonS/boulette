@@ -1,16 +1,18 @@
 import React from "react";
-import { IoTrashOutline } from "react-icons/io5";
+import { IoTrashOutline, IoCheckmarkSharp } from "react-icons/io5";
 
 import "./button.css";
 
-const Button = ({ onClick, label, type, className, disabled }) => {
+const Button = ({ onClick, label, type, className, disabled, icon }) => {
   return (
     <button
       className={`button ${className || ""}`}
       onClick={onClick}
       type={type}
       disabled={disabled}>
-      {label === "delete" ? <IoTrashOutline /> : label}
+      {label}
+      {icon === "delete" && <IoTrashOutline />}
+      {icon === "success" && <IoCheckmarkSharp />}
     </button>
   );
 };

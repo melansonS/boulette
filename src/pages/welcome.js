@@ -10,7 +10,7 @@ import "./welcome.css";
 
 const Welcome = () => {
   const { name, setName } = useContext(GameContext);
-  const [roomId, setRoomdId] = useState("");
+  const [roomId, setRoomId] = useState("");
   const history = useHistory();
 
   const handleCreateRoom = () => {
@@ -48,7 +48,7 @@ const Welcome = () => {
           <div className="welcome-form">
             <TextInput
               className="input"
-              onChange={(e) => setRoomdId(e.target.value)}
+              onChange={(e) => setRoomId(e.target.value)}
               placeholder="room id"
               required
             />

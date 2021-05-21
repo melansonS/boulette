@@ -4,6 +4,7 @@ import Button from "./button";
 import "./promptButtons.css";
 
 const PromptButtons = ({
+  disabled,
   prompt,
   handleDeletePrompt,
   handleDrawPrompt,
@@ -12,8 +13,16 @@ const PromptButtons = ({
   const [confirmDelete, setConfirmDelete] = useState(false);
   return (
     <div className="prompt-buttons">
-      <Button onClick={() => handleDrawPrompt(prompt)} icon="success" />
-      <Button onClick={() => handleSkipPrompt(prompt)} label="skip" />
+      <Button
+        onClick={() => handleDrawPrompt(prompt)}
+        icon="success"
+        disabled={disabled}
+      />
+      <Button
+        onClick={() => handleSkipPrompt(prompt)}
+        label="skip"
+        disabled={disabled}
+      />
       {confirmDelete ? (
         <Button
           className="red"
@@ -21,7 +30,11 @@ const PromptButtons = ({
           label="delete"
         />
       ) : (
-        <Button onClick={() => setConfirmDelete(true)} icon="delete" />
+        <Button
+          onClick={() => setConfirmDelete(true)}
+          icon="delete"
+          disabled={disabled}
+        />
       )}
     </div>
   );

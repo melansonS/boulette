@@ -7,10 +7,11 @@ import { socket } from "../utils/socket";
 import Layout from "../components/layout";
 import Button from "../components/button";
 import TextInput from "../components/textInput";
-import Boulette from "../components/boulette";
+import PromptBoules from "../components/promptBoules";
 import Modal from "../components/modal";
 import BouleAnim from "../components/bouleAnim";
 import PromptButtons from "../components/promptButtons";
+import shuffle from "../utils/shuffleArray";
 import "./room.css";
 
 const Room = () => {
@@ -35,7 +36,6 @@ const Room = () => {
   const params = useParams();
   const roomId = params.roomId.toLowerCase();
   const [notfound, setNotFound] = useState(false);
-  const [users, setUsers] = useState([]);
   const [prompts, setPrompts] = useState([]);
   const [nameValue, setNameValue] = useState("");
   const [promptValue, setPromptValue] = useState("");
@@ -43,6 +43,7 @@ const Room = () => {
   const [showResetGameModal, setShowResetGameModal] = useState(false);
   const [showTeamMembers, setShowTeamMembers] = useState(false);
   const [yourPrompt, setYourPrompt] = useState([]);
+  const [animationFrame, setAnimationFrame] = useState(1);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -52,6 +53,7 @@ const Room = () => {
     };
     fetchData();
   }, [roomId]);
+
   useEffect(() => {
     if (name && !notfound) {
       socket.emit("joinRoom", { roomId, name });
@@ -62,22 +64,22 @@ const Room = () => {
     socket.on("roomUsers", (data) => {
       console.log("users DATA", data);
       setTeams(data);
-      setUsers([...data.redTeam.members, ...data.blueTeam.members]);
       const amRed =
         data.redTeam.members.findIndex((member) => member.id === socket.id) !==
         -1;
       setMyTeam(amRed ? "redTeam" : "blueTeam");
     });
     socket.on("allPrompts", (data) => {
-      console.log("prompt DATA", data);
-      setPrompts(data);
-      setYourPrompt(data[data.findIndex((p) => !p.drawn)]);
+      if (data && data.findIndex) {
+        setPrompts(data);
+        const shuffledPromts = shuffle(data);
+        setYourPrompt(shuffledPromts[data.findIndex((p) => !p.drawn)]);
+      }
     });
     socket.on("promptDrawn", (data) => {
       setTeams(data.teams);
       setPrompts(data.prompts);
       const available = data.prompts.filter((p) => !p.drawn);
-      console.log(available, data.prompts);
       if (available.length === 0) {
         handleResetPrompts();
         return handleStopRound();
@@ -132,9 +134,11 @@ const Room = () => {
       handleStopRound();
     }
   };
+
   const handleDrawPrompt = (prompt) => {
     socket.emit("drawPrompt", { roomId, promptId: prompt.id, team: myTeam });
   };
+
   const handleSkipPrompt = (prompt) => {
     setSkippedPrompts([...skippedPrompts, prompt.id]);
     const notDrawn = prompts.filter((p) => !p.drawn && p.id !== prompt.id);
@@ -190,15 +194,22 @@ const Room = () => {
                 <div> TIMER : {timer && Math.ceil(timer / 1000)}</div>
                 {currentlyPlaying && yourPrompt && (
                   <>
-                    <BouleAnim key={yourPrompt.id} text={yourPrompt.text} />
+                    <BouleAnim
+                      key={yourPrompt.id}
+                      text={yourPrompt.text}
+                      animationFrame={animationFrame}
+                      setAnimationFrame={setAnimationFrame}
+                    />
                     <PromptButtons
                       key={`buttons-${yourPrompt.id}`}
                       prompt={yourPrompt}
+                      disabled={animationFrame < 3}
                       handleDeletePrompt={handleDeletePrompt}
                       handleDrawPrompt={handleDrawPrompt}
                       handleSkipPrompt={handleSkipPrompt}
                     />
                     <Button onClick={handleStopRound} label="Stop Round" />
+                    <PromptBoules prompts={prompts} />
                   </>
                 )}
                 {!currentlyPlaying && (
@@ -252,7 +263,7 @@ const Room = () => {
                       style={{ "--height": teams.redTeam.members.length }}>
                       {teams.redTeam.members.map((member) => {
                         return (
-                          <div>
+                          <div key={member.id}>
                             <b style={{ color: "#C70039" }}>[#]</b>
                             <b>{member.username}</b>
                           </div>
@@ -280,7 +291,7 @@ const Room = () => {
                       style={{ "--height": teams.blueTeam.members.length }}>
                       {teams.blueTeam.members.map((member) => {
                         return (
-                          <div>
+                          <div key={member.id}>
                             <b style={{ color: "#1B87A8" }}>[#]</b>
                             <b>{member.username}</b>
                           </div>
@@ -300,7 +311,11 @@ const Room = () => {
             )}
             <Button
               className="start-round"
-              disabled={roundInProgress || prompts.length < 3}
+              disabled={
+                roundInProgress ||
+                prompts.length < 3 ||
+                !prompts.some((p) => !p.drawn)
+              }
               onClick={handleStartRound}
               label="Start Round!"
             />
@@ -311,23 +326,14 @@ const Room = () => {
                 placeholder="cool prompt"
                 disabled={roundInProgress}
                 value={promptValue}
+                required
                 type="submit"
               />
             </form>
             <h3>
               <u>Prompts</u>
             </h3>
-            {prompts && (
-              <div className="prompts">
-                {prompts.map((prompt) => {
-                  return (
-                    <div key={prompt.id}>
-                      <Boulette className={prompt.drawn ? "drawn" : ""} />
-                    </div>
-                  );
-                })}
-              </div>
-            )}
+            {prompts && <PromptBoules prompts={prompts} />}
             <Button
               onClick={() => setShowResetModal(true)}
               label="Reset Prompts"

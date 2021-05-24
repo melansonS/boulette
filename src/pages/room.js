@@ -20,6 +20,8 @@ const Room = () => {
     setName,
     roundInProgress,
     setRoundInProgress,
+    roundComplete,
+    setRoundComplete,
     playingUser,
     setPlayingUser,
     currentlyPlaying,
@@ -70,10 +72,14 @@ const Room = () => {
       setMyTeam(amRed ? "redTeam" : "blueTeam");
     });
     socket.on("allPrompts", (data) => {
-      if (data && data.findIndex) {
-        setPrompts(data);
-        const shuffledPromts = shuffle(data);
-        setYourPrompt(shuffledPromts[data.findIndex((p) => !p.drawn)]);
+      const { prompts, roundCompleteReset } = data;
+      if (roundCompleteReset) {
+        setRoundComplete(true);
+      }
+      if (prompts && prompts.findIndex) {
+        setPrompts(prompts);
+        const shuffledPromts = shuffle(prompts);
+        setYourPrompt(shuffledPromts[prompts.findIndex((p) => !p.drawn)]);
       }
     });
     socket.on("promptDrawn", (data) => {
@@ -81,7 +87,7 @@ const Room = () => {
       setPrompts(data.prompts);
       const available = data.prompts.filter((p) => !p.drawn);
       if (available.length === 0) {
-        handleResetPrompts();
+        handleResetPrompts({ roundCompleteReset: true });
         return handleStopRound();
       }
       const index = Math.floor(Math.random() * available.length);
@@ -156,8 +162,8 @@ const Room = () => {
     setYourPrompt(available[index]);
   };
 
-  const handleResetPrompts = () => {
-    socket.emit("resetPrompts", { roomId });
+  const handleResetPrompts = ({ roundCompleteReset }) => {
+    socket.emit("resetPrompts", { roomId, roundCompleteReset });
     setShowResetModal(false);
   };
 
@@ -189,7 +195,23 @@ const Room = () => {
       {!notfound &&
         (name ? (
           <>
-            {roundInProgress && (
+            <Button
+              label={"round complete !!!"}
+              onClick={() => setRoundComplete(true)}></Button>
+            {roundComplete && (
+              <Modal closeModal={() => setRoundComplete(false)}>
+                <div style={{ textAlign: "center" }}>
+                  <h3>Round Complete :D </h3>
+                  <div>Get ready for the next round!</div>
+                  <br></br>
+                  <Button
+                    onClick={() => setRoundComplete(false)}
+                    label="Continue"
+                  />
+                </div>
+              </Modal>
+            )}
+            {roundInProgress && !roundComplete && (
               <Modal canClose={false} closeModal={() => handleStopRound()}>
                 <div> TIMER : {timer && Math.ceil(timer / 1000)}</div>
                 {currentlyPlaying && yourPrompt && (

@@ -18,11 +18,6 @@ function shuffle(array) {
   return array;
 }
 
-// Used like so
-var arr = [2, 11, 37, 42];
-shuffle(arr);
-console.log(arr);
-
 //https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
 
 export default shuffle;

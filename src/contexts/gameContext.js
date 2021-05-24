@@ -6,6 +6,7 @@ const GameProvider = ({ children }) => {
   const [name, setName] = useState("");
   const [currentlyPlaying, setCurrentlyPlaying] = useState(false);
   const [playingUser, setPlayingUser] = useState("");
+  const [roundComplete, setRoundComplete] = useState(false);
   const [roundInProgress, setRoundInProgress] = useState(false);
   const [timer, setTimer] = useState(undefined);
   const [myTeam, setMyTeam] = useState(undefined);
@@ -16,6 +17,8 @@ const GameProvider = ({ children }) => {
     setName,
     currentlyPlaying,
     setCurrentlyPlaying,
+    roundComplete,
+    setRoundComplete,
     roundInProgress,
     setRoundInProgress,
     playingUser,

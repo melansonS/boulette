@@ -195,9 +195,6 @@ const Room = () => {
       {!notfound &&
         (name ? (
           <>
-            <Button
-              label={"round complete !!!"}
-              onClick={() => setRoundComplete(true)}></Button>
             {roundComplete && (
               <Modal closeModal={() => setRoundComplete(false)}>
                 <div style={{ textAlign: "center" }}>

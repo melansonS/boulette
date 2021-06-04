@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { IoChevronDown, IoChevronUp } from "react-icons/io5";
+import { IoChevronDown, IoChevronUp, IoPersonSharp } from "react-icons/io5";
 import { URL, colors } from "../utils/constants";
 import { useParams, Link } from "react-router-dom";
 import GameContext from "../contexts/gameContext";
@@ -64,7 +64,7 @@ const Room = () => {
       setNotFound(true);
     });
     socket.on("roomUsers", (data) => {
-      console.log("users DATA", data);
+      // console.log("users DATA", data);
       setTeams(data);
       const amRed =
         data.redTeam.members.findIndex((member) => member.id === socket.id) !==
@@ -94,18 +94,18 @@ const Room = () => {
       setYourPrompt(available[index]);
     });
     socket.on("roundStart", (data) => {
-      console.log("ROUND START?? data", data);
+      // console.log("ROUND START?? data", data);
       setRoundInProgress(true);
       setPlayingUser(data);
     });
     socket.on("currentlyPlaying", () => {
-      console.log("am currently playing ?");
+      // console.log("am currently playing ?");
       setCurrentlyPlaying(true);
     });
     socket.on("roundStop", () => {
-      console.log("STOPPING ROUND!", { currentlyPlaying });
+      // console.log("STOPPING ROUND!", { currentlyPlaying });
       setRoundInProgress(false);
-      console.log("set current to fasle!");
+      // console.log("set current to fasle!");
       setCurrentlyPlaying(false);
       setPlayingUser("");
     });
@@ -121,6 +121,13 @@ const Room = () => {
     });
     return () => socket.emit("leaveRoom", { roomId });
   }, []);
+
+  const formatTimer = (seconds) => {
+    const m = Math.floor(seconds / 60);
+    const s = Math.floor(seconds - m * 60);
+
+    return `${m}:${s < 10 ? "0" : ""}${s}`;
+  };
 
   const handleSubmitName = (e) => {
     e.preventDefault();
@@ -151,7 +158,7 @@ const Room = () => {
     const available = notDrawn.filter(
       (p) => !skippedPrompts.find((skipped) => skipped.id === p.id)
     );
-    console.log(available, prompts);
+    // console.log(available, prompts);
     if (available.length === 0) {
       if (notDrawn.length === 0) {
         return setYourPrompt(prompt);
@@ -198,7 +205,7 @@ const Room = () => {
             {roundComplete && (
               <Modal closeModal={() => setRoundComplete(false)}>
                 <div style={{ textAlign: "center" }}>
-                  <h3>Round Complete :D </h3>
+                  <h3>Round Complete</h3>
                   <div>Get ready for the next round!</div>
                   <br></br>
                   <Button
@@ -210,7 +217,7 @@ const Room = () => {
             )}
             {roundInProgress && !roundComplete && (
               <Modal canClose={false} closeModal={() => handleStopRound()}>
-                <div> TIMER : {timer && Math.ceil(timer / 1000)}</div>
+                <div>TIMER {timer && formatTimer(timer / 1000)}</div>
                 {currentlyPlaying && yourPrompt && (
                   <>
                     <BouleAnim
@@ -227,7 +234,11 @@ const Room = () => {
                       handleDrawPrompt={handleDrawPrompt}
                       handleSkipPrompt={handleSkipPrompt}
                     />
-                    <Button onClick={handleStopRound} label="Stop Round" />
+                    <Button
+                      onClick={handleStopRound}
+                      label="Stop Round"
+                      className="secondary-button"
+                    />
                     <PromptBoules prompts={prompts} />
                   </>
                 )}
@@ -240,135 +251,136 @@ const Room = () => {
                             ? colors.red
                             : colors.blue,
                       }}>
-                      [#]
+                      <IoPersonSharp />
                     </span>
-                    {playingUser.username} is Currently playing c:
+                    {playingUser.username} is Currently playing
                   </div>
                 )}
               </Modal>
-            )}
-            {!currentlyPlaying && roundInProgress && (
-              <div>
-                <span
-                  style={{
-                    color:
-                      playingUser.team === "redTeam" ? colors.red : colors.blue,
-                  }}>
-                  [#]
-                </span>
-                {playingUser.username} is Currently playing c:
-              </div>
             )}
             <div className="header">
               <h1>Boulette!</h1>
               <h4>Room Id: {roomId}</h4>
             </div>
-            {teams && (
-              <div className="teams">
+            <div className="game-container">
+              {teams && (
+                <div className="teams">
+                  <Button
+                    className="show-members"
+                    onClick={() => setShowTeamMembers(!showTeamMembers)}
+                    label={
+                      showTeamMembers ? <IoChevronUp /> : <IoChevronDown />
+                    }
+                  />
+                  {teams.redTeam && (
+                    <div className="team-container">
+                      <h4 className="team-header">
+                        <IoPersonSharp style={{ color: colors.red }} />
+                        <u>RedTeam:</u> {teams.redTeam.points}
+                      </h4>
+                      <div
+                        className={`team-members ${
+                          showTeamMembers ? "hidden-team-members" : ""
+                        }`}
+                        style={{ "--height": teams.redTeam.members.length }}>
+                        {teams.redTeam.members.map((member) => {
+                          return (
+                            <div key={member.id}>
+                              <b>{member.username}</b>
+                            </div>
+                          );
+                        })}
+                        {myTeam !== "redTeam" && (
+                          <Button
+                            className="secondary-button"
+                            disabled={roundInProgress}
+                            onClick={handleChangeTeam}
+                            label="Join"
+                          />
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  {teams.blueTeam && (
+                    <div className="team-container">
+                      <h4 className="team-header">
+                        <IoPersonSharp style={{ color: colors.blue }} />
+                        <u>BlueTeam:</u> {teams.blueTeam.points}
+                      </h4>
+                      <div
+                        className={`team-members ${
+                          showTeamMembers ? "hidden-team-members" : ""
+                        }`}
+                        style={{ "--height": teams.blueTeam.members.length }}>
+                        {teams.blueTeam.members.map((member) => {
+                          return (
+                            <div key={member.id}>
+                              <b>{member.username}</b>
+                            </div>
+                          );
+                        })}
+                        {myTeam !== "blueTeam" && (
+                          <Button
+                            className="secondary-button"
+                            disabled={roundInProgress}
+                            onClick={handleChangeTeam}
+                            label="Join"
+                          />
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+              <div className="game-divider"></div>
+              <div className="game-body">
+                <div className="game-prompts">
+                  <span>Add New Prompt!</span>
+                  <form onSubmit={(e) => handlePromptSubmit(e)}>
+                    <TextInput
+                      onChange={(e) => setPromptValue(e.target.value)}
+                      placeholder="cool prompt"
+                      disabled={roundInProgress}
+                      value={promptValue}
+                      required
+                      type="submit"
+                    />
+                  </form>
+                  <h3>
+                    <u>Prompts</u>
+                  </h3>
+                  {prompts && <PromptBoules prompts={prompts} />}
+                </div>
                 <Button
-                  className="show-members"
-                  onClick={() => setShowTeamMembers(!showTeamMembers)}
-                  label={showTeamMembers ? <IoChevronDown /> : <IoChevronUp />}
+                  className="start-round"
+                  disabled={
+                    roundInProgress ||
+                    prompts.length < 3 ||
+                    !prompts.some((p) => !p.drawn)
+                  }
+                  onClick={handleStartRound}
+                  label="Start Round!"
                 />
-                {teams.redTeam && (
-                  <div className="team-container">
-                    <h3>
-                      <u>RedTeam:</u> {teams.redTeam.points}
-                    </h3>
-                    <div
-                      className={`team-members ${
-                        showTeamMembers ? "hidden-team-members" : ""
-                      }`}
-                      style={{ "--height": teams.redTeam.members.length }}>
-                      {teams.redTeam.members.map((member) => {
-                        return (
-                          <div key={member.id}>
-                            <b style={{ color: "#C70039" }}>[#]</b>
-                            <b>{member.username}</b>
-                          </div>
-                        );
-                      })}
-                      {myTeam !== "redTeam" && (
-                        <Button
-                          disabled={roundInProgress}
-                          onClick={handleChangeTeam}
-                          label="Join"
-                        />
-                      )}
-                    </div>
-                  </div>
-                )}
-                {teams.blueTeam && (
-                  <div className="team-container">
-                    <h3>
-                      <u>BlueTeam:</u> {teams.blueTeam.points}
-                    </h3>
-                    <div
-                      className={`team-members ${
-                        showTeamMembers ? "hidden-team-members" : ""
-                      }`}
-                      style={{ "--height": teams.blueTeam.members.length }}>
-                      {teams.blueTeam.members.map((member) => {
-                        return (
-                          <div key={member.id}>
-                            <b style={{ color: "#1B87A8" }}>[#]</b>
-                            <b>{member.username}</b>
-                          </div>
-                        );
-                      })}
-                      {myTeam !== "blueTeam" && (
-                        <Button
-                          disabled={roundInProgress}
-                          onClick={handleChangeTeam}
-                          label="Join"
-                        />
-                      )}
-                    </div>
-                  </div>
-                )}
+                <div className="reset-buttons">
+                  <Button
+                    onClick={() => setShowResetModal(true)}
+                    label="Reset Prompts"
+                    className="secondary-button"
+                  />
+                  <Button
+                    onClick={() => setShowResetGameModal(true)}
+                    label="Reset Game"
+                    className="secondary-button"
+                  />
+                </div>
               </div>
-            )}
-            <Button
-              className="start-round"
-              disabled={
-                roundInProgress ||
-                prompts.length < 3 ||
-                !prompts.some((p) => !p.drawn)
-              }
-              onClick={handleStartRound}
-              label="Start Round!"
-            />
-            Add New Prompt!
-            <form onSubmit={(e) => handlePromptSubmit(e)}>
-              <TextInput
-                onChange={(e) => setPromptValue(e.target.value)}
-                placeholder="cool prompt"
-                disabled={roundInProgress}
-                value={promptValue}
-                required
-                type="submit"
-              />
-            </form>
-            <h3>
-              <u>Prompts</u>
-            </h3>
-            {prompts && <PromptBoules prompts={prompts} />}
-            <Button
-              onClick={() => setShowResetModal(true)}
-              label="Reset Prompts"
-            />
+            </div>
             {showResetModal && (
               <Modal closeModal={() => setShowResetModal(false)}>
                 <h3>Are you sure you want to reset the prompts?</h3>
                 <Button onClick={handleResetPrompts} label="Reset Prompts" />
               </Modal>
             )}
-            <div className="reset-game">
-              <Button
-                onClick={() => setShowResetGameModal(true)}
-                label="Reset Game"
-              />
-            </div>
             {showResetGameModal && (
               <Modal closeModal={() => setShowResetGameModal(false)}>
                 <h3>Are you sure you want to reset the Game?</h3>

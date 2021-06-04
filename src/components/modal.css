@@ -4,21 +4,27 @@
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 1;
+  display: flex;
 }
 
 .modal-content {
+  margin: auto;
   position: absolute;
+  top: 5vh;
+  left: 0;
+  bottom: 0;
+  right: 0;
   justify-content: center;
   align-items: center;
   display: flex;
   flex-direction: column;
   width: 50%;
-  top: 30%;
-  margin: 0;
+  height: fit-content;
   background-color: #102b3f;
   border-radius: 12px;
   z-index: 2;
   padding: 1em;
+  min-height: 300px;
 }
 
 .close {
@@ -35,4 +41,14 @@
 .close:hover {
   cursor: pointer;
   text-decoration: underline;
+}
+
+.modal-content .button {
+  margin-top: 1em;
+}
+
+@media only screen and (max-width: 600px) {
+  .modal-content {
+    top: 20;
+  }
 }

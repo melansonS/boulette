@@ -15,9 +15,9 @@ const Welcome = () => {
 
   const handleCreateRoom = () => {
     let newRoomId = makeRoomId();
-    console.log("id!", newRoomId);
+    // console.log("id!", newRoomId);
     socket.emit("createRoom", { roomId: newRoomId }, (response) => {
-      console.log(response);
+      // console.log(response);
       newRoomId = response.id;
     });
     history.push(`/${newRoomId}`);
@@ -26,7 +26,7 @@ const Welcome = () => {
 
   const handleJoinRoom = (e) => {
     e.preventDefault();
-    console.log(roomId);
+    // console.log(roomId);
     history.push(`/${roomId}`);
   };
 

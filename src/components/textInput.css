@@ -7,4 +7,9 @@
   border-bottom: 1px solid black;
   padding: 8px;
   text-align: center;
+  max-width: 300px;
+}
+
+::placeholder {
+  color: #999;
 }

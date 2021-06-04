@@ -6,6 +6,8 @@ import { BrowserRouter } from "react-router-dom";
 
 function App() {
   useEffect(() => {
+    const body = document.body;
+    body.style.backgroundImage = "url(images/asfalt-dark.png)";
     return () => socket.disconnect();
   }, []);
 

@@ -26,6 +26,15 @@
   background-color: transparent;
   font-weight: bold;
   color: #cdf7f6;
+  height: 55px;
+  font-size: 0.5em;
+}
+
+.secondary-button {
+  color: #cdf7f6;
+  background-color: #102b3f;
+  border: 1px solid #cdf7f6;
+  margin-bottom: 1px;
 }
 
 .red {

@@ -8,3 +8,9 @@
   filter: invert(25%) sepia(4%) saturate(2653%) hue-rotate(147deg)
     brightness(121%) contrast(93%);
 }
+
+@media only screen and (max-width: 600px) {
+  .boulette {
+    width: 30px;
+  }
+}

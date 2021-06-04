@@ -71,7 +71,11 @@
   margin-bottom: 1em;
   display: flex;
   width: 100%;
-  justify-content: space-around;
+  justify-content: center;
+}
+
+.reset-buttons .button {
+  margin: 0 0.5em;
 }
 
 .team-header {
@@ -109,6 +113,11 @@ h3 {
 
 .hidden-team-members {
   max-height: 0;
+}
+
+.current-player-info {
+  display: flex;
+  align-items: center;
 }
 
 @media only screen and (max-width: 600px) {

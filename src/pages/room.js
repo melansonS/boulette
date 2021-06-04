@@ -244,16 +244,17 @@ const Room = () => {
                 )}
                 {!currentlyPlaying && (
                   <div>
-                    <span
-                      style={{
-                        color:
-                          playingUser.team === "redTeam"
-                            ? colors.red
-                            : colors.blue,
-                      }}>
-                      <IoPersonSharp />
+                    <span className="current-player-info">
+                      <IoPersonSharp
+                        style={{
+                          color:
+                            playingUser.team === "redTeam"
+                              ? colors.red
+                              : colors.blue,
+                        }}
+                      />
+                      {playingUser.username} is Currently playing
                     </span>
-                    {playingUser.username} is Currently playing
                   </div>
                 )}
               </Modal>

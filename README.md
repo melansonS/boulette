@@ -1,7 +1,7 @@
 # Boulette
 
 
-This project came together out of a desire to play _Boulette_ (a fun take on Charades) with friends and familly during this past year's lockdown. It is designed to to be used in conjuction with a video conferencing app of your chosing and allows all of the remote players to interact with a shared pool of prompts, to manage the teams and to keep track of the scores! 
+This project came together out of a desire to play _Boulette_ (a fun take on Charades) with friends and family during this past year's lockdown. It is designed to be used in conjunction with a video conferencing app of your choosing and allows all of the remote players to interact with a shared pool of prompts, to manage the teams and to keep track of the scores! 
 
 Since the goal was for the game to be played seamlessly and for the app to be interactive, Socket.io seemed like the ideal tool for the job. Which also game me the opportunity to play around with some new Tech! 
 

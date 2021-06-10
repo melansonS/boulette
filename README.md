@@ -11,4 +11,4 @@ This project was built using HTML, CSS, React, NodeJs and Socket.io
 
 
 
-### Check it out! https://https://boulette-melansons.vercel.app/
+### Check it out! https://boulette-melansons.vercel.app/

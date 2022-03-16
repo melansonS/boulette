@@ -5,6 +5,10 @@
   width: 100%;
 }
 
+.room-id {
+  display: flex;
+}
+
 .not-found,
 .enter-your-name {
   padding-top: 3em;

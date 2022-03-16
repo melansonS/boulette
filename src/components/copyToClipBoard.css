@@ -1,0 +1,18 @@
+.copy-to-clipboard {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.copy-button {
+  font-size: 1em;
+  color: #cdf7f6;
+  background-color: transparent;
+  outline: none;
+  border: none;
+  padding: 10px;
+}
+
+.copy-button:hover {
+  cursor: pointer;
+}

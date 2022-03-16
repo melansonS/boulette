@@ -6,6 +6,7 @@ import GameContext from "../contexts/gameContext";
 import { socket } from "../utils/socket";
 import Layout from "../components/layout";
 import Button from "../components/button";
+import CopyToClipBoard from "../components/copyToClipBoad";
 import TextInput from "../components/textInput";
 import PromptBoules from "../components/promptBoules";
 import Modal from "../components/modal";
@@ -261,7 +262,10 @@ const Room = () => {
             )}
             <div className="header">
               <h1>Boulette!</h1>
-              <h4>Room Id: {roomId}</h4>
+              <div className="room-id">
+                <h4>Room Id: {roomId}</h4>
+                <CopyToClipBoard value={`${window.location.href}`}/>
+              </div>
             </div>
             <div className="game-container">
               {teams && (

@@ -1,5 +1,5 @@
 // export const URL = "http://localhost:4001";
-export const URL = "https://boulette-server.herokuapp.com";
+export const URL = "https://boulette-backend.onrender.com";
 
 export const colors = {
   blue: "#1B87A8",

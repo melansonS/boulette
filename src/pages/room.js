@@ -207,7 +207,7 @@ const Room = () => {
               <Modal closeModal={() => setRoundComplete(false)}>
                 <div style={{ textAlign: "center" }}>
                   <h3>Round Complete</h3>
-                  <div>Get ready for the next round!</div>
+                  <div>Get ready for the next one!</div>
                   <br></br>
                   <Button
                     onClick={() => setRoundComplete(false)}

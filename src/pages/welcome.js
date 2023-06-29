@@ -35,6 +35,7 @@ const Welcome = () => {
       <h1>Boulette!</h1>
       <div className="welcome-page">
         <TextInput
+          className="username-input"
           onChange={(e) => setName(e.target.value)}
           placeholder="Enter a username!"
           value={name}
